@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static com.javamultiplex.security.ApplicationUserRole.ADMIN;
+import static com.javamultiplex.security.ApplicationUserRole.STUDENT;
+
 /**
  * @author Rohit Agarwal on 03/10/20 4:37 pm
  * @copyright www.javamultiplex.com
@@ -44,12 +47,18 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails userDetails = User
+        UserDetails rohitUser = User
                 .builder()
                 .username("Rohit")
                 .password(passwordEncoder.encode("password"))
-                .roles("STUDENT")
+                .roles(STUDENT.name())//ROLE_STUDENT
                 .build();
-        return new InMemoryUserDetailsManager(userDetails);
+        UserDetails bhavnaUser = User
+                .builder()
+                .username("Bhavna")
+                .password(passwordEncoder.encode("password123"))
+                .roles(ADMIN.name())//ROLE_ADMIN
+                .build();
+        return new InMemoryUserDetailsManager(rohitUser, bhavnaUser);
     }
 }
