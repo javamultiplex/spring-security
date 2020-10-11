@@ -12,8 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-import static com.javamultiplex.security.ApplicationUserRole.ADMIN;
-import static com.javamultiplex.security.ApplicationUserRole.STUDENT;
+import static com.javamultiplex.security.ApplicationUserRole.*;
 
 /**
  * @author Rohit Agarwal on 03/10/20 4:37 pm
@@ -35,8 +34,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf()
+                .disable()
                 .authorizeRequests()
-                .antMatchers("/","index","/css/*","/js/*").permitAll()
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
                 .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest()
                 .authenticated()
@@ -47,18 +48,26 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails rohitUser = User
+        UserDetails rohit = User
                 .builder()
                 .username("Rohit")
                 .password(passwordEncoder.encode("password"))
                 .roles(STUDENT.name())//ROLE_STUDENT
                 .build();
-        UserDetails bhavnaUser = User
+        UserDetails bhavna = User
                 .builder()
                 .username("Bhavna")
                 .password(passwordEncoder.encode("password123"))
                 .roles(ADMIN.name())//ROLE_ADMIN
                 .build();
-        return new InMemoryUserDetailsManager(rohitUser, bhavnaUser);
+        UserDetails shivani = User
+                .builder()
+                .username("Shivani")
+                .password(passwordEncoder.encode("password123"))
+                .roles(ADMIN_TRAINEE.name())//ROLE_ADMIN_TRAINEE
+                .build();
+        return new InMemoryUserDetailsManager(rohit,
+                bhavna,
+                shivani);
     }
 }

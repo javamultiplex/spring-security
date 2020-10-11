@@ -1,13 +1,14 @@
 package com.javamultiplex.controller;
 
 import com.javamultiplex.model.Student;
+import com.javamultiplex.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Rohit Agarwal on 26/09/20 11:53 pm
@@ -17,18 +18,21 @@ import java.util.List;
 @RequestMapping("api/v1/students")
 public class StudentController {
 
-    private final List<Student> STUDENTS = Arrays.asList(
-            new Student(1, "Rohit Agarwal"),
-            new Student(2, "Bhavna Agarwal"),
-            new Student(3, "Shivani Agarwal")
-    );
+    private final StudentService studentService;
+
+    @Autowired
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
 
     @GetMapping(path = "{studentId}")
-    public Student getStudent(@PathVariable Integer studentId) {
-        return STUDENTS
-                .stream()
-                .filter(student -> studentId.equals(student.getStudentId()))
-                .findFirst()
-                .orElseThrow(()->new IllegalArgumentException("Student "+studentId+" doesn't exist"));
+    public ResponseEntity<?> getStudent(@PathVariable Integer studentId) {
+        Student student;
+        try {
+            student = studentService.getStudent(studentId);
+        } catch (IllegalArgumentException exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 }
