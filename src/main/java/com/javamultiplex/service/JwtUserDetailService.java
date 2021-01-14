@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @copyright www.javamultiplex.com
  */
 @Service
-public class CustomUserDetailService implements UserDetailsService {
+public class JwtUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return new User("foo", "bar", new ArrayList<>());

@@ -6,16 +6,16 @@ import java.io.Serializable;
  * @author Rohit Agarwal on 13/01/21 9:21 pm
  * @copyright www.javamultiplex.com
  */
-public class AuthenticationRequest implements Serializable {
+public class JwtAuthenticationRequest implements Serializable {
 
     private static final long serialVersionUID = -7857706891351092313L;
     private String username;
     private String password;
 
-    public AuthenticationRequest() {
+    public JwtAuthenticationRequest() {
     }
 
-    public AuthenticationRequest(String username, String password) {
+    public JwtAuthenticationRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }

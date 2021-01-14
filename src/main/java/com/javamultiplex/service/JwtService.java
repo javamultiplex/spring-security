@@ -18,8 +18,9 @@ import java.util.function.Function;
  * @author Rohit Agarwal on 13/01/21 11:07 pm
  * @copyright www.javamultiplex.com
  */
-@Service("jwtService")
-public class JWTService {
+@Service
+public class JwtService {
+
     @Value("${jwt_secret_key}")
     public String secretKey;
 
@@ -51,7 +52,7 @@ public class JWTService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 10 * 1000 * 24 * 60 * 60))
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes(StandardCharsets.UTF_8))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
