@@ -1,18 +1,15 @@
 package com.javamultiplex.security;
 
-import com.javamultiplex.filter.JwtAuthenticationFilter;
-import com.javamultiplex.service.JwtUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.sql.DataSource;
 
 /**
  * @author Rohit Agarwal on 13/01/21 9:14 pm
@@ -22,46 +19,41 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtUserDetailService jwtUserDetailService;
-
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private WebSecurityAuthenticationEntryPoint webSecurityAuthenticationEntryPoint;
+    private DataSource dataSource;
 
     @Override
-    protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(jwtUserDetailService);
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.jdbcAuthentication()
+                .dataSource(dataSource);
+//                .withDefaultSchema()
+//                .withUser(
+//                        User.withUsername("foo")
+//                                .password("foo")
+//                                .roles("ADMIN")
+//                                .build()
+//                )
+//                .withUser(
+//                        User.withUsername("bar")
+//                                .password("bar")
+//                                .roles("USER")
+//                                .build()
+//                );
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/api/v1/authenticate").permitAll()
-                .and()
-                .authorizeRequests()
+        http.authorizeRequests()
+                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/user").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(webSecurityAuthenticationEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .formLogin();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
-    }
-
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 }

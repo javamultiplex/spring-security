@@ -1,7 +1,6 @@
 package com.javamultiplex.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -9,12 +8,21 @@ import org.springframework.web.bind.annotation.RestController;
  * @copyright www.javamultiplex.com
  */
 @RestController
-@RequestMapping("/api/v1")
 public class HelloWorldController {
 
     @GetMapping("/hello")
     public String hello() {
         return "Hello World";
+    }
+
+    @GetMapping("/user")
+    public String user() {
+        return "Hello User";
+    }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "Hello Admin";
     }
 
 }
